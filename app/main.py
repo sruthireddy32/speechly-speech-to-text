@@ -26,9 +26,25 @@ _model=None
 def model():
     global _model
     if _model is None:
+        import os
         from faster_whisper import WhisperModel
-        device=os.getenv('WHISPER_DEVICE','cpu')
-        _model=WhisperModel(os.getenv('WHISPER_MODEL','base'),device=device,compute_type=os.getenv('WHISPER_COMPUTE_TYPE','int8' if device=='cpu' else 'float16'))
+
+        os.environ["HF_HOME"] = "/tmp/huggingface"
+        os.environ["HUGGINGFACE_HUB_CACHE"] = "/tmp/huggingface/hub"
+        os.environ["TMPDIR"] = "/tmp"
+
+        device = os.getenv("WHISPER_DEVICE", "cpu")
+        compute_type = os.getenv(
+            "WHISPER_COMPUTE_TYPE",
+            "int8" if device == "cpu" else "float16"
+        )
+
+        _model = WhisperModel(
+            os.getenv("WHISPER_MODEL", "base"),
+            device=device,
+            compute_type=compute_type,
+            download_root="/tmp/faster-whisper"
+        )
     return _model
 @app.get('/')
 def home(): return FileResponse('app/static/index.html')
