@@ -64,9 +64,9 @@ async def transcribe(audio:UploadFile=File(...),save:bool=True):
         segments, info = model().transcribe(
     path,
     beam_size=1,
-    vad_filter=True,
-    language=None
+    vad_filter=False
 )
+
         text=' '.join(s.text.strip() for s in segments).strip(); lang=getattr(info,'language',None)
     except Exception as e: raise HTTPException(500,'Transcription failed: '+str(e)[:200])
     finally:
