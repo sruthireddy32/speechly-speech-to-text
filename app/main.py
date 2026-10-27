@@ -25,6 +25,7 @@ app.mount('/static',StaticFiles(directory='app/static'),name='static')
 _model=None
 def model():
     global _model
+
     if _model is None:
         import os
         from faster_whisper import WhisperModel
@@ -45,6 +46,7 @@ def model():
             compute_type=compute_type,
             download_root="/tmp/faster-whisper"
         )
+
     return _model
 @app.get('/')
 def home(): return FileResponse('app/static/index.html')
