@@ -41,7 +41,7 @@ def model():
         )
 
         _model = WhisperModel(
-            os.getenv("WHISPER_MODEL", "base"),
+            os.getenv("WHISPER_MODEL", "tiny"),
             device=device,
             compute_type=compute_type,
             download_root="/tmp/faster-whisper"
@@ -61,7 +61,12 @@ async def transcribe(audio:UploadFile=File(...),save:bool=True):
     path=None
     try:
         with tempfile.NamedTemporaryFile(suffix='.webm',delete=False) as f: f.write(raw); path=f.name
-        segments,info=model().transcribe(path,beam_size=1,vad_filter=True)
+        segments, info = model().transcribe(
+    path,
+    beam_size=1,
+    vad_filter=True,
+    language=None
+)
         text=' '.join(s.text.strip() for s in segments).strip(); lang=getattr(info,'language',None)
     except Exception as e: raise HTTPException(500,'Transcription failed: '+str(e)[:200])
     finally:
